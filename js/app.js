@@ -4,11 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstInput          = document.querySelector('input[type="text"]'),
           email               = document.getElementById('mail'),
           jobTitleSelect      = document.querySelector('select#title'),
+          otherJobRole        = document.getElementById('other-title'),
           firstFieldset       = document.querySelector('fieldset'),
           activitiesFieldset  = document.querySelector('fieldset.activities'),
           designDropdown      = document.getElementById('design'),
           colorDropdown       = document.getElementById('color'),
+          designOptions       = document.getElementById('colors-js-puns'),
+          colorOptions        = colorDropdown.children,
+          colorOptionsArr     = [],
+          firstColorOption    = document.querySelector('option[value="cornflowerblue"]'),
           paymentDropdown     = document.getElementById('payment'),
+          paymentParagraphs   = document.getElementsByTagName('p'),
           creditCard          = document.getElementById('cc-num'),
           zip                 = document.getElementById('zip'),
           cvv                 = document.getElementById('cvv'),
@@ -19,76 +25,85 @@ document.addEventListener('DOMContentLoaded', () => {
           originalBorderColor = '#c1deeb';
 
           //Create workshops arrays
-          const morningWorkshops = [
-              document.querySelector('input[name="js-frameworks"]'),//9 - 12
-              document.querySelector('input[name="express"]'),//9 - 12
-              document.querySelector('input[name="build-tools"]'),//9 - 12
+          const workshopTimeSlot1 = [
+              document.querySelector('input[name="js-frameworks"]'),//tues, 9 - 12
+              document.querySelector('input[name="express"]'),//tues, 9 - 12
           ];
 
-          const afternoonWorkshops = [
-              document.querySelector('input[name="js-libs"]'),//1 - 4
-              document.querySelector('input[name="node"]'),//1 - 4
-              document.querySelector('input[name="npm"]')//1 - 4
+          const workshopTimeSlot2 = [
+              document.querySelector('input[name="js-libs"]'),//tues, 1 - 4
+              document.querySelector('input[name="node"]'),//tues, 1 - 4 
           ];
 
-    const allWorkshops = morningWorkshops.concat(afternoonWorkshops);
+          const otherTimeSlots = [
+            document.querySelector('input[name="build-tools"]'),//weds, 9 - 12
+            document.querySelector('input[name="npm"]')//weds, 1 - 4
+          ];
 
-    function removeElement(node) {
-        if(node) {
-            node.remove();
+        var allWorkshops = workshopTimeSlot1.concat(workshopTimeSlot2);
+        allWorkshops = allWorkshops.concat(otherTimeSlots);
+
+        function removeElement(node) {
+            if(node) {
+                node.remove();
+            }
         }
-    }
 
 
 
     //On DOM ready, give first element focus
     firstInput.focus();
 
+    //remove 'other' input field until it is needed
+    otherJobRole.style.display = 'none';
+
     //Add event listener to job select option
     jobTitleSelect.addEventListener('change', () => {
-        //if 'other' option selected, add input node
         if(jobTitleSelect.value == 'other') {
-            //Check if already exists
-            if(!document.getElementById('other-title')) {
-                let otherJobRole = document.createElement("INPUT");
-                //Set attributes
-                otherJobRole.type = 'text';
-                otherJobRole.id = 'other-title';
-                otherJobRole.placeholder = 'Your job role';
-                //append to first fieldset node
-                firstFieldset.appendChild(otherJobRole);
-            }
+            otherJobRole.style.display = 'block';
         } else {
-            //If a different option is selected then remove input node as it is no longer required
-            removeElement(document.getElementById('other-title'))
+            otherJobRole.style.display = 'none';
         }
     });
 
 
+    function firstColorOptionVal(text, value) {
+        firstColorOption.innerHTML = text;
+        firstColorOption.value = value;
+    }
+
+    firstColorOptionVal('Please select a T shirt design', '');
+
+    for(let i = 0; i < colorOptions.length; i++) {
+        colorOptions[i].style.display = 'none';
+    }
+
     //listen for change to design dropdown
     designDropdown.addEventListener('change', () => {
-        const colorOptions = colorDropdown.children,
-              colorOptionsArr = [];
 
-              function displayLoop(init, length, display) {
-                  for(let i = init; i < length; i++) {
-                      colorOptionsArr[i].style.display = display;
-                  }
-              }
+        function displayLoop(init, length, display) {
+          for(let i = init; i < length; i++) {
+              colorOptionsArr[i].style.display = display;
+          }
+        }
 
-            for(let i = 0; i < colorOptions.length; i++) {
-                colorOptionsArr.push(colorOptions[i]);
-            }
+        for(let i = 0; i < colorOptions.length; i++) {
+            colorOptionsArr.push(colorOptions[i]);
+        }
 
         if(designDropdown.value == 'js puns') {
+            firstColorOptionVal('Cornflower Blue (JS Puns shirt only)', 'cornflowerblue');
             displayLoop(3, 6, 'none');
             displayLoop(0, 3, 'block');
         } else if(designDropdown.value == 'heart js') {
+            firstColorOptionVal('Tomato (I ♥ JS shirt only)', 'tomato');
             displayLoop(3, 6, 'block');
             displayLoop(0, 3, 'none');
         } else {
             for(let i = 0; i < colorOptionsArr.length; i++) {
-                colorOptionsArr[i].style.display = 'block';
+                firstColorOptionVal('Please select a T shirt design', '');
+                displayLoop(0, 6, 'none');
+                firstColorOption.style.display = 'block';
             }
         }
     });
@@ -96,29 +111,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkSchedule() {
 
-        if(mainConfCheckbox.checked) {
-            for(let i = 0; i < allWorkshops.length; i++) {
-                allWorkshops[i].setAttribute('disabled', '');
-            }
-        } else {
-            for(let i = 0; i < allWorkshops.length; i++) {
-                allWorkshops[i].removeAttribute('disabled', '');
-            }
-        }
-
-        function morningAfternoonChk(workshop) {
+        function checkTimeSlot(workshop) {
             for(let i = 0; i < workshop.length; i++) {
                 if(workshop[i].checked) {
-                    for(let j = 0; j < morningWorkshops.length; j++) {
+                    for(let j = 0; j < workshop.length; j++) {
                         workshop[j].setAttribute('disabled', '');
+                        workshop[i].removeAttribute('disabled', '');
+                    }
+                    break;
+                } else if(!workshop[i].checked) {
+                    for(let j = 0; j < workshop.length; j++) {
+                        workshop[j].removeAttribute('disabled', '');
                         workshop[i].removeAttribute('disabled', '');
                     }
                 }
             }
         }
 
-        morningAfternoonChk(morningWorkshops);
-        morningAfternoonChk(afternoonWorkshops);
+        checkTimeSlot(workshopTimeSlot1);
+        checkTimeSlot(workshopTimeSlot2);
+
 
         function calculateCost() {
             let costString = 'Total: $';
@@ -126,15 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             removeElement(document.getElementById('total-cost'));
 
+
+
             if(mainConfCheckbox.checked) {
-                counter = 2;
-            } else {
-                for(let i = 0; i < allWorkshops.length; i++) {
-                    if(allWorkshops[i].checked) {
-                        counter++;
-                    }
+                counter += 2;
+            } 
+
+            for(let i = 0; i < allWorkshops.length; i++) {
+                if(allWorkshops[i].checked) {
+                    counter++;
                 }
             }
+            
 
             counter *= 100;
             const totalCostNode = document.createElement('span');
@@ -151,8 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
         checkSchedule();
     });
 
+    
+    for(let i = 0; i < paymentParagraphs.length; i++) {
+        paymentParagraphs[i].style.display = 'none';
+    }
+
     paymentDropdown.addEventListener('change', () => {
-        const paymentParagraphs = document.getElementsByTagName('p');
         const CCInputs = document.getElementById('credit-card');
 
         function nonCCPayment(value, index) {
@@ -223,19 +242,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     email.value = '';
                     email.style.borderColor = 'tomato';
                     email.placeholder = 'Please enter a valid email address';
-                    console.log('not valid');
                 }
             } else if(emailValue.length < 1) {
                 e.preventDefault();
                 email.value = '';
                 email.style.borderColor = 'tomato';
                 email.placeholder = 'Please enter an email address';
-                console.log('not filled');
             } else {
                 e.preventDefault();
                 email.style.borderColor = originalBorderColor;
                 email.placeholder = '';
-                console.log('valid');
                 validEmail = true;
             }
         }
