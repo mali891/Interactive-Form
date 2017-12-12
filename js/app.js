@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const workshopTimeSlot2 = [
               document.querySelector('input[name="js-libs"]'),//tues, 1 - 4
-              document.querySelector('input[name="node"]'),//tues, 1 - 4 
+              document.querySelector('input[name="node"]'),//tues, 1 - 4
           ];
 
           const otherTimeSlots = [
@@ -138,18 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             removeElement(document.getElementById('total-cost'));
 
-
-
             if(mainConfCheckbox.checked) {
                 counter += 2;
-            } 
+            }
 
             for(let i = 0; i < allWorkshops.length; i++) {
                 if(allWorkshops[i].checked) {
                     counter++;
                 }
             }
-            
+
 
             counter *= 100;
             const totalCostNode = document.createElement('span');
@@ -166,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkSchedule();
     });
 
-    
+
     for(let i = 0; i < paymentParagraphs.length; i++) {
         paymentParagraphs[i].style.display = 'none';
     }
